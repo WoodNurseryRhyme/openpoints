@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 import logging
 from typing import List
-from ..layers.norm import create_norm1d
 from ..layers import create_linearblock
 from ...utils import get_missing_parameters_message, get_unexpected_parameters_message
 from ..build import MODELS, build_model_from_cfg
@@ -133,6 +132,5 @@ class ClsHead(nn.Module):
                 elif preprocess in ['avg', 'mean']:
                     global_feats.append(torch.mean(end_points, dim=self.point_dim, keepdim=False))
             end_points = torch.cat(global_feats, dim=1)
-        print(end_points.shape, self.head)
         logits = self.head(end_points)
         return logits

@@ -116,7 +116,7 @@ if __name__ == '__main__':
     num_neighbors = 20
 
     print('Input size {}'.format(feats.size()))
-    net = DGCNN().to(device)
+    net = BallDGCNN().to(device)
     print(net)
     out = net(points, feats)
 

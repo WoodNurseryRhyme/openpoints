@@ -3,9 +3,12 @@ Hacked together by / Copyright 2020, Ross Wightman
 Modified to 3D application by / Copyright 2022@PointNeXt team
 """
 import logging
+
 import torch
 import torch.nn as nn
-from ..layers import GroupEmbed, KMeansEmbed, TransformerEncoder, create_norm, create_linearblock
+
+from ..layers import (GroupEmbed, KMeansEmbed, TransformerEncoder,
+                      create_linearblock, create_norm)
 
 
 class ViTGraph(nn.Module):

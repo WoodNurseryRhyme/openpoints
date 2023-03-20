@@ -2,12 +2,14 @@
 Reference: https://github.com/POSTECH-CVLab/point-transformer
 Their result: 70.0 mIoU on S3DIS Area 5. 
 """
+import logging
 from functools import partial
+
 import torch
 import torch.nn as nn
-import logging
 
 from openpoints.cpp.pointops.functions import pointops
+
 from ..build import MODELS
 
 

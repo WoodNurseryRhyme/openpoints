@@ -3,11 +3,12 @@ Reference:
 https://github.com/yanx27/Pointnet_Pointnet2_pytorch/blob/master/models/pointnet_utils.py
 
 """
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
 from ..build import MODELS
-import numpy as np
 
 
 class STN3d(nn.Module):
@@ -196,4 +197,4 @@ class PointNetEncoder(nn.Module):
         return pos, torch.cat([pointfeat, x], 1)
     
     def forward(self, x, features=None):
-        return self.forward_cls_features(x)
+        return self.forward_cls_feat(x)

@@ -44,8 +44,8 @@ def resume_model(model, cfg, pretrained_path=None):
     return start_epoch, best_metrics
 
 
-def resume_optimizer(cfg, optimizer, pretrained_path=None):
-    pretrained_path = os.path.join(cfg.ckpt_dir, os.path.join(cfg.run_name,
+def resume_optimizer(args, cfg, optimizer, pretrained_path=None):
+    pretrained_path = os.path.join(cfg.ckpt_dir, os.path.join( args.exp_name,
                                                               '_ckpt_latest.pth')) if pretrained_path is None else pretrained_path
     if not os.path.exists(pretrained_path):
         logging.info(f'[RESUME INFO] no checkpoint file from path {pretrained_path}...')
@@ -58,14 +58,14 @@ def resume_optimizer(cfg, optimizer, pretrained_path=None):
         optimizer.load_state_dict(state_dict['optimizer'])
 
 
-def save_checkpoint(cfg, model, epoch, optimizer=None, scheduler=None,
+def save_checkpoint(args, cfg, model, epoch, optimizer=None, scheduler=None,
                     additioanl_dict=None,
                     is_best=False, post_fix='ckpt_latest', save_name=None, ):
     if save_name is None:
-        save_name = cfg.run_name
+        save_name = args.exp_name
 
     current_ckpt_name = f'{save_name}_{post_fix}.pth'
-    current_pretrained_path = os.path.join(cfg.ckpt_dir, current_ckpt_name)
+    current_pretrained_path = os.path.join(args.ckpt_path, current_ckpt_name)
     save_dict = {
         'model': model.module.state_dict() if hasattr(model, 'module') else model.state_dict(),
         'optimizer': optimizer.state_dict() if optimizer is not None else dict(),
@@ -79,13 +79,13 @@ def save_checkpoint(cfg, model, epoch, optimizer=None, scheduler=None,
 
     if cfg.save_freq > 0 and epoch % cfg.save_freq == 0:
         milestone_ckpt_name = f'{save_name}_E{epoch}.pth'
-        milestone_pretrained_path = os.path.join(cfg.ckpt_dir, milestone_ckpt_name)
+        milestone_pretrained_path = os.path.join(args.ckpt_path, milestone_ckpt_name)
         shutil.copyfile(current_pretrained_path, milestone_pretrained_path)
         logging.info("Saved in {}".format(milestone_pretrained_path))
 
     if is_best:
         best_ckpt_name = f'{save_name}_ckpt_best.pth' if save_name else 'ckpt_best.pth'
-        best_pretrained_path = os.path.join(cfg.ckpt_dir, best_ckpt_name)
+        best_pretrained_path = os.path.join(args.ckpt_path, best_ckpt_name)
         shutil.copyfile(current_pretrained_path, best_pretrained_path)
         logging.info("Found the best model and saved in {}".format(best_pretrained_path))
 

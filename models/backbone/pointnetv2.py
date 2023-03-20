@@ -6,13 +6,16 @@
 Reference:
 https://github.com/sshaoshuai/Pointnet2.PyTorch
 """
+import logging
 from typing import List, Optional
 
 import torch
 import torch.nn as nn
-import logging
-from ..layers import furthest_point_sample, random_sample,  LocalAggregation, three_interpolation, create_convblock1d # grid_subsampling,
+
 from ..build import MODELS
+from ..layers import LocalAggregation  # grid_subsampling,
+from ..layers import (create_convblock1d, furthest_point_sample, random_sample,
+                      three_interpolation)
 
 
 class PointNetSAModuleMSG(nn.Module):

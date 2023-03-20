@@ -1,17 +1,19 @@
 """PointNext for inputs with variable sizes.
 """
+import logging
 from re import X
 from typing import List
-import logging
+
 import torch
 import torch.nn as nn
-
-from torch_geometric.nn import radius as ballquery, radius_graph, knn, knn_graph, fps, knn_interpolate
+from torch_geometric.nn import fps, knn, knn_graph, knn_interpolate
+from torch_geometric.nn import radius as ballquery
+from torch_geometric.nn import radius_graph
 from torch_scatter import scatter
 
 from ..build import MODELS
-from ..layers import create_linearblock, create_linearblock, create_convblock2d, create_act, CHANNEL_MAP, \
-    random_sample, three_interpolation
+from ..layers import (CHANNEL_MAP, create_act, create_convblock2d,
+                      create_linearblock, random_sample, three_interpolation)
 
 
 # TODO: PyG for large-scale graph is super slow!!!! especially the KNN cuda. 

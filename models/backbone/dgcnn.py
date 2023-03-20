@@ -89,6 +89,20 @@ class DGCNN(nn.Module):
     def forward_final_feat(self, pts, features=None):
         self.forward(pts, features)
 
+    def forward_global_feat(self, pts, features=None):
+        if hasattr(pts, 'keys'):
+            pts, features = pts['pos'], pts['x']
+        if features is None:
+            features = pts.transpose(1, 2).contiguous().unsqueeze(-1)
+        if len(features.shape) < 4:
+            features = features.unsqueeze(-1)
+        feats = [self.head(features, self.knn(pts))]
+        for i in range(self.n_blocks - 2):
+            feats.append(self.backbone[i](feats[-1]))
+        feats = torch.cat(feats, dim=1).squeeze(-1)
+        fusion = self.fusion_block(feats)
+        return self.maxpool(fusion)
+
     def forward_cls_feat(self, pts, features=None):
         if hasattr(pts, 'keys'):
             pts, features = pts['pos'], pts['x']

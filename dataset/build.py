@@ -68,7 +68,7 @@ def build_dataloader_from_cfg(batch_size,
         if split_cfg.get('split', None) is None:    # add 'split' in dataset_split_cfg
             split_cfg.split = split
         split_cfg.transform = data_transform
-        dataset = build_dataset_from_cfg(dataset_cfg.common, split_cfg)
+        dataset = build_dataset_from_cfg(dataset_cfg._base_.common, split_cfg)
 
     collate_fn = dataset.collate_fn if hasattr(dataset, 'collate_fn') else None
     collate_fn = dataloader_cfg.collate_fn if dataloader_cfg.get('collate_fn', None) is not None else collate_fn

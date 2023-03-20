@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import logging
+
 import torch
 import torch.nn as nn
-from openpoints.models.layers import create_convblock2d, create_grouper, furthest_point_sample, random_sample
-import logging
+
+from openpoints.models.layers import (create_convblock2d, create_grouper,
+                                      furthest_point_sample, random_sample)
+
 from ..build import MODELS
 
 

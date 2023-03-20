@@ -4,13 +4,16 @@ Modified to 3D application by / Copyright 2022@Pix4Point team
 """
 import logging
 from typing import List
+
 import torch
 import torch.nn as nn
-from ..layers import create_norm, create_linearblock, create_convblock1d, three_interpolation, \
-    furthest_point_sample, random_sample
+
+from ..build import MODELS, build_model_from_cfg
+from ..layers import (create_convblock1d, create_linearblock, create_norm,
+                      furthest_point_sample, random_sample,
+                      three_interpolation)
 from ..layers.attention import Block
 from .pointnext import FeaturePropogation
-from ..build import MODELS, build_model_from_cfg
 
 
 @MODELS.register_module()

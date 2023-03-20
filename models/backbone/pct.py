@@ -5,26 +5,32 @@ Reference: https://github.com/Strawberry-Eat-Mango/PCT_Pytorch
 
 """
 
-from pickle import FALSE
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
 from openpoints.models.layers import SubsampleGroup
+
+from ...utils.pct_utils import *
 
 
 class Local_op(nn.Module):
     def __init__(self, in_channels, out_channels):
         super(Local_op, self).__init__()
-        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=1, bias=False)
-        self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=1, bias=False)
-        self.bn1 = nn.BatchNorm2d(out_channels)
-        self.bn2 = nn.BatchNorm2d(out_channels)
+        self.conv1 = nn.Conv1d(in_channels, out_channels, kernel_size=1, bias=False)
+        self.conv2 = nn.Conv1d(out_channels, out_channels, kernel_size=1, bias=False)
+        self.bn1 = nn.BatchNorm1d(out_channels)
+        self.bn2 = nn.BatchNorm1d(out_channels)
 
     def forward(self, x):
         b, n, s, d = x.size()  # torch.Size([32, 512, 32, 6]) 
+        x = x.permute(0, 1, 3, 2)   
+        x = x.reshape(-1, d, s) 
+        batch_size, _, N = x.size()
         x = F.relu(self.bn1(self.conv1(x))) # B, D, N
         x = F.relu(self.bn2(self.conv2(x))) # B, D, N
-        x, _ = torch.max(x, -1, keepdim=False)
+        x = F.adaptive_max_pool1d(x, 1).view(batch_size, -1)
+        x = x.reshape(b, n, -1).permute(0, 2, 1)
         return x
 
 class Pct(nn.Module):
@@ -51,24 +57,21 @@ class Pct(nn.Module):
         self.bn7 = nn.BatchNorm1d(256)
         self.dp2 = nn.Dropout(p=dropout)
         self.linear3 = nn.Linear(256, output_channels)
-        # TODO: subsample layer. 
-        self.subsample1 = SubsampleGroup(512, 32, group='knn')        
-        self.subsample2 = SubsampleGroup(256, 32, group='knn')        
 
-    def forward(self, xyz, x):
+    def forward(self, x):
+        xyz = x.permute(0, 2, 1)
         batch_size, _, _ = x.size()
         # B, D, N
         x = F.relu(self.bn1(self.conv1(x)))
         # B, D, N
         x = F.relu(self.bn2(self.conv2(x)))
-        
-        # Embedding layer.
-        new_xyz, new_feature = self.subsample1(xyz, x)         
+        x = x.permute(0, 2, 1)
+        new_xyz, new_feature = sample_and_group(npoint=512, radius=0.15, nsample=32, xyz=xyz, points=x)         
         feature_0 = self.gather_local_0(new_feature)
-        new_xyz, new_feature = self.subsample2(new_xyz, feature_0) 
+        feature = feature_0.permute(0, 2, 1)
+        new_xyz, new_feature = sample_and_group(npoint=256, radius=0.2, nsample=32, xyz=new_xyz, points=feature) 
         feature_1 = self.gather_local_1(new_feature)
 
-        # Transformer block.
         x = self.pt_last(feature_1)
         x = torch.cat([x, feature_1], dim=1)
         x = self.conv_fuse(x)
@@ -82,7 +85,7 @@ class Pct(nn.Module):
         return x
 
 class Point_Transformer_Last(nn.Module):
-    def __init__(self,  channels=256):
+    def __init__(self, channels=256):
         super(Point_Transformer_Last, self).__init__()
         self.conv1 = nn.Conv1d(channels, channels, kernel_size=1, bias=False)
         self.conv2 = nn.Conv1d(channels, channels, kernel_size=1, bias=False)
@@ -141,13 +144,9 @@ class SA_Layer(nn.Module):
         attention = attention / (1e-9 + attention.sum(dim=1, keepdim=True))
         # b, c, n
         x_r = torch.bmm(x_v, attention)
-        
-        # TODO: 
-        # x_r = self.act(self.after_norm(self.trans_conv(x - x_r)))
-        x_r = self.act(self.after_norm(self.trans_conv(x_r)))
+        x_r = self.act(self.after_norm(self.trans_conv(x - x_r)))
         x = x + x_r
         return x
-
 
 if __name__ == "__main__":
     B, C, N = 2, 4, 4096

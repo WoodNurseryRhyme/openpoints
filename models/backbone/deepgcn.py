@@ -1,11 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import logging
+
 import torch
 import torch.nn as nn
 from torch.nn import Sequential as Seq
-from openpoints.models.layers.graph_conv import DynConv, GraphConv, ResDynBlock, DenseDynBlock, DilatedKNN
+
 from openpoints.models.layers import create_convblock1d
-import logging
+from openpoints.models.layers.graph_conv import (DenseDynBlock, DilatedKNN,
+                                                 DynConv, GraphConv,
+                                                 ResDynBlock)
+
 from ..build import MODELS
 
 

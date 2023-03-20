@@ -3,13 +3,17 @@ PointNeXt: Revisiting PointNet++ with Improved Training and Scaling Strategies
 https://arxiv.org/abs/2206.04670
 Guocheng Qian, Yuchen Li, Houwen Peng, Jinjie Mai, Hasan Abed Al Kader Hammoud, Mohamed Elhoseiny, Bernard Ghanem
 """
-from typing import List, Type
 import logging
+from typing import List, Type
+
 import torch
 import torch.nn as nn
+
 from ..build import MODELS
-from ..layers import create_convblock1d, create_convblock2d, create_act, CHANNEL_MAP, \
-    create_grouper, furthest_point_sample, random_sample, three_interpolation
+from ..layers import (CHANNEL_MAP, create_act, create_convblock1d,
+                      create_convblock2d, create_grouper,
+                      furthest_point_sample, random_sample,
+                      three_interpolation)
 
 
 def get_reduction_fn(reduction):

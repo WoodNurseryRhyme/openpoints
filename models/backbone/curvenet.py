@@ -6,8 +6,10 @@
 """
 
 from unicodedata import category
+
 import torch.nn as nn
 import torch.nn.functional as F
+
 """
 @Author: Yue Wang
 @Contact: yuewangx@mit.edu
@@ -20,11 +22,12 @@ Modified by
 @Time: 2021/01/21 3:10 PM
 """
 
+from time import time
+
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from time import time
-import numpy as np
 
 """
 @Author: Tiange Xiang

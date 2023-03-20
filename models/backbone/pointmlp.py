@@ -6,22 +6,21 @@ Xu Ma and Can Qin and Haoxuan You and Haoxi Ran and Yun Fu
 Reference:
 https://github.com/ma-xu/pointMLP-pytorch
 """
+import copy
+import logging
 import string
 from typing import List, Optional
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from ..layers import furthest_point_sample, random_sample, LocalAggregation, create_convblock2d, three_interpolate, \
-    three_nn, gather_operation, create_linearblock, create_convblock1d, create_grouper
-import logging
-import copy
+
 from ..build import MODELS
-from ..layers import furthest_point_sample, fps
+from ..layers import (LocalAggregation, create_convblock1d, create_convblock2d,
+                      create_grouper, create_linearblock, fps,
+                      furthest_point_sample, gather_operation, random_sample,
+                      three_interpolate, three_nn)
 from ..layers.group import QueryAndGroup
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
 
 
 def get_activation(activation):

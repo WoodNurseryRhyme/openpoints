@@ -59,30 +59,30 @@ class PCNCls(Dataset):
         idx = 0
         
         for index, dc in enumerate(dataset_categories):
-                samples = dc[partition]
-                for s in samples:
-                    """
-                    for dense gt
-                    /DATA/mty/topology_aware_completion/data/PCN/%s/complete/%s/%s.pcd
-                    """
-                    name = os.path.join(data_dir, partition, 'complete', dc['taxonomy_id'], '%s.pcd' % s)
+            samples = dc[partition]
+            for s in samples:
+                """
+                for dense gt
+                /DATA/mty/topology_aware_completion/data/PCN/%s/complete/%s/%s.pcd
+                """
+                # name = os.path.join(data_dir, partition, 'complete', dc['taxonomy_id'], '%s.pcd' % s)
 
-                    """
-                    for partial 
-                    /DATA/mty/topology_aware_completion/data/PCN/%s/partial/%s/%s/%02d.pcd
-                    """
-                    # name = [ self.partial_path % (partition, dc['taxonomy_id'], s, i)
-                    #         for i in range(self.n_renderings)
-                    #     ]
+                """
+                for partial 
+                /DATA/mty/topology_aware_completion/data/PCN/%s/partial/%s/%s/%02d.pcd
+                """
+                # name = [ self.partial_path % (partition, dc['taxonomy_id'], s, i)
+                #         for i in range(self.n_renderings)
+                #     ]
 
-                    """
-                    for completion output
-                    """
-                    # name = os.path.join(data_dir, dc['taxonomy_id'], 'Model%02d-Dense.pcd' % idx)
-                    # idx += 1
+                """
+                for completion output
+                """
+                name = os.path.join(data_dir, dc['taxonomy_id'], 'Model%02d-Dense.pcd' % idx)
+                idx += 1
 
-                    all_data_file.append(name)
-                    all_label.append(np.int64(index))
+                all_data_file.append(name)
+                all_label.append(np.int64(index))
         # from ipdb import set_trace
         # set_trace()
         # all_data_file = np.concatenate(all_data_file, axis=0)

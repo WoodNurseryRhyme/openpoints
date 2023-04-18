@@ -180,6 +180,25 @@ def get_features_by_keys(data, keys='pos,x'):
         return data[keys].transpose(1,2).contiguous()
     else:
         return torch.cat([data[key] for key in keys.split(',')], -1).transpose(1,2).contiguous()
+    
+    
+def get_scene_seg_features(input_features_dim, 
+                           points, 
+                           feats=None, 
+                           use_colors_not_points=True
+                           ):
+    """_summary_
+    """
+    if input_features_dim == 1:
+        features = feats[:, -2:-1] 
+    elif input_features_dim == 3:
+        features = feats[:, :3] if use_colors_not_points else points.transpose(1, 2)
+    elif 3<input_features_dim<5:
+        features = feats[:, :input_features_dim]
+    else:
+        points = points.transpose(1, 2) if len(points.shape)>2 else points
+        features = torch.cat([points, feats[:, :input_features_dim-3]], 1)
+    return features.contiguous()
 
 
 def get_class_weights(num_per_class, normalize=False):

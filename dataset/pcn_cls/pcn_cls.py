@@ -47,10 +47,45 @@ class PCNCls(Dataset):
         with open(self.category_file) as f:
             self.dataset_categories = json.loads(f.read())
 
-        self.data_file, self.label = self._load_data(data_dir, self.partition, self.dataset_categories)
+        
+        if split == 'testAll':
+            self.data_file, self.label = self._load_all_data(data_dir, self.dataset_categories)
+        else:
+            self.data_file, self.label = self._load_data(data_dir, self.partition, self.dataset_categories)
         self.num_points = num_points
-        logging.info(f'==> sucessfully loaded {self.partition} data')
+        logging.info(f'==> sucessfully loaded {split} data')
         self.transform = transform
+
+    
+    def _load_all_data(self, data_dir, dataset_categories):
+        all_data_file = []
+        all_label = []
+
+        idx = 0
+        for index, dc in enumerate(dataset_categories):
+            for partition in ['train', 'val', 'test']:
+                samples = dc[partition]
+                for s in samples:
+                    """
+                    completion output
+                    """
+                    name = os.path.join(data_dir, dc['taxonomy_id'], 'Model%02d-Dense.pcd' % idx)
+                    idx += 1
+
+                    """
+                    for partial 
+                    /DATA/mty/topology_aware_completion/data/PCN/%s/partial/%s/%s/%02d.pcd
+                    """
+                    # n_renderings = 8 if partition == 'train' else 1
+                    # name = [ self.partial_path % (partition, dc['taxonomy_id'], s, i)
+                    #         for i in range(n_renderings)
+                    #     ]
+                    
+                    all_data_file.append(name)
+                    all_label.append(np.int64(index))                
+
+        return all_data_file, all_label
+    
 
     def _load_data(self, data_dir, partition, dataset_categories):
         all_data_file = []
